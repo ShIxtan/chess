@@ -1,6 +1,9 @@
 require_relative 'keypress'
 require_relative 'player'
 
+class UserExit < StandardError
+end
+
 class HumanPlayer < Player
   def initialize(*args)
     super(*args)
@@ -17,7 +20,7 @@ class HumanPlayer < Player
         @choices << @cursor
       elsif char == 'q'
         puts
-        exit
+        raise UserExit.new
       else
         move_cursor(char)
       end

@@ -39,7 +39,7 @@ class Piece
   end
 
   def valid_moves # for AI
-    moves.reject { |move| @board.simulate(@pos, move).in_check?(@color) }
+    moves.reject { |move| @board.simulate([@pos, move]).in_check?(@color) }
   end
 end
 

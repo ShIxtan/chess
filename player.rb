@@ -47,8 +47,29 @@ class Player
     print "#{@name.colorize(color)}, what's your move? " unless game_ended
   end
 
+  def pieces
+    @board.find{ |piece| piece.color == @color}
+  end
+
+  def moves
+    # this method is contrived
+    arr = []
+
+    pieces.each do |piece|
+      piece.moves.each do |move|
+        arr << [piece.pos, move]
+      end
+    end
+
+    arr
+  end
+
   def checkmate
     puts "Checkmate!".colorize(@color)
+  end
+
+  def enemy_color
+    @color == :blue ? :red : :blue
   end
 
   def parse(index)

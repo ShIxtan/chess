@@ -1,3 +1,5 @@
+require 'ruby-prof'
+
 require_relative 'board'
 require_relative 'human_player'
 require_relative 'computer_player'
@@ -18,6 +20,8 @@ class Game
       rescue InvalidMoveError => e
         player.set_error(e.message)
         retry
+      rescue UserExit
+        return
       end
       player = toggle(player)
     end
@@ -31,6 +35,8 @@ class Game
 end
 
 if $PROGRAM_NAME == __FILE__
+  RubyProf.start
+
   board = Board.new
   game = Game.new(
     ComputerPlayer.new("not AI", board, :red),
@@ -38,4 +44,8 @@ if $PROGRAM_NAME == __FILE__
     board
   )
   game.run
+
+  result = RubyProf.stop
+  printer = RubyProf::FlatPrinter.new(result)
+  printer.print(STDOUT)
 end

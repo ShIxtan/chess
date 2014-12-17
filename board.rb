@@ -39,10 +39,12 @@ class Board
   end
 
   def checkmate?(color)
+    return false unless in_check?(color)
+    # accomodate stalemate
     pieces = find { |piece| piece.color == color }
     pieces.each do |piece|
       piece.moves.each do |to|
-        unless simulate(piece.pos, to).in_check?(color)
+        unless simulate([piece.pos, to]).in_check?(color)
           return false
         end
       end
@@ -52,9 +54,13 @@ class Board
   end
 
   def find(&proc)
-    @grid.flatten.compact.select do |piece|
+    pieces.select do |piece|
       proc.call(piece)
     end
+  end
+
+  def pieces
+    @grid.flatten.compact
   end
 
   def move(color, moves)
@@ -66,14 +72,15 @@ class Board
     end
 
     # make following error more informative
-    if simulate(from, to).in_check?(color)
+    if simulate([from, to]).in_check?(color)
       raise InvalidMoveError.new("You are in check")
     end
 
     perform_move(from, to)
   end
 
-  def simulate(from, to)
+  def simulate(poses)
+    from, to = poses
     self.dup.perform_move(from, to)
   end
 
