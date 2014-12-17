@@ -35,7 +35,11 @@ class Piece
   end
 
   def dup(dup_board = @board)
-    self.class.new(@pos, @color, dup_board)
+    self.class.new(@pos.dup, @color, dup_board)
+  end
+
+  def valid_moves # for AI
+    moves.reject { |move| @board.simulate(@pos, move).in_check?(@color) }
   end
 end
 

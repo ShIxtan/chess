@@ -1,56 +1,10 @@
-require 'colorize'
 require_relative 'keypress'
+require_relative 'player'
 
-class NilClass
-  def render
-    "  "
-  end
-end
-
-class HumanPlayer
-  attr_accessor :board, :color
-
-  def initialize(name, board = nil)
-    @name = name
-    @board = board
-    @error = nil
+class HumanPlayer < Player
+  def initialize(*args)
+    super(*args)
     @cursor = [0, 0]
-    @choices = []
-  end
-
-  def render
-    system("clear")
-    tile = [:white, :black]
-
-    puts "  #{("a".."h").to_a.join(" ")}"
-    8.times do |i|
-      print "#{i + 1} "
-      8.times do |j|
-        symbol = @board[[i, j]].render
-        bg = (@cursor == [i, j] ? :green : tile[(i + j) % 2])
-        print symbol.colorize(:background => bg)
-      end
-      ending = " "
-      if i == 0
-        ending += parse(@choices[0])
-      elsif i == 2
-        ending += parse(@choices[1])
-      end
-      puts ending
-    end
-    puts @error.to_s.colorize(:yellow)
-    @error = nil
-    print "#{@name}, what's your move? "
-  end
-
-  def set_error(message)
-    @error = message
-  end
-
-  def parse(index)
-    return ' ' if index.nil?
-    num, ch = index
-    ("a".."h").to_a[ch] + (num + 1).to_s
   end
 
   def turn

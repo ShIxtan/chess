@@ -1,5 +1,4 @@
 require_relative 'pieces'
-# make colors variables, instead of literal constants
 
 class InvalidMoveError < StandardError
 end
@@ -35,12 +34,12 @@ class Board
     king = find { |tile| tile.class == King && tile.color == color }.first
     opposite = (color == :red ? :blue : :red)
 
-    enemies = find {|tile| !tile.nil? && tile.color == opposite}
+    enemies = find {|tile| tile.color == opposite}
     enemies.any? { |enemy| enemy.moves.include?(king.pos)}
   end
 
   def checkmate?(color)
-    pieces = find { |tile| !tile.nil? && tile.color == color }
+    pieces = find { |piece| piece.color == color }
     pieces.each do |piece|
       piece.moves.each do |to|
         unless simulate(piece.pos, to).in_check?(color)
@@ -53,25 +52,22 @@ class Board
   end
 
   def find(&proc)
-    found = []
-
-    @grid.each_with_index do |row, x|
-      row.each_index do |y|
-        found << self[[x, y]]  if proc.call(self[[x, y]])
-      end
+    @grid.flatten.compact.select do |piece|
+      proc.call(piece)
     end
-
-    found
   end
 
-  def move(color, from, to)
+  def move(color, moves)
+    from, to = moves
     raise InvalidMoveError.new("No piece there") if self[from].nil?
     raise InvalidMoveError.new("That is not your piece") if self[from].color != color
     unless self[from].moves.include?(to)
       raise InvalidMoveError.new("#{self[from].class} can't move there")
     end
+
+    # make following error more informative
     if simulate(from, to).in_check?(color)
-      raise InvalidMoveError.new("You cannot move into check")
+      raise InvalidMoveError.new("You are in check")
     end
 
     perform_move(from, to)
@@ -90,11 +86,6 @@ class Board
     end
 
     dup_board
-  end
-
-  def won?
-    return false
-    # change this
   end
 
   def [](pos)

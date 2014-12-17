@@ -1,32 +1,28 @@
 require_relative 'board'
 require_relative 'human_player'
+require_relative 'computer_player'
 
 class Game
-  def initialize(player1, player2)
+  def initialize(player1, player2, board = Board.new)
     # input here to set up players; pass board to AI
+    @board = board
     @player1, @player2 = player1, player2
-    @board = Board.new
-    @player1.board = @player2.board = @board
-    @player1.color = :red
-    @player2.color = :blue
   end
 
   def run
-    color = {@player1 => :red, @player2 => :blue}
     player = @player1
 
-    until @board.checkmate?(color[player])
+    until @board.checkmate?(player.color)
       begin
-        @board.move(color[player], *player.turn)
+        @board.move(player.color, player.turn)
       rescue InvalidMoveError => e
         player.set_error(e.message)
         retry
       end
       player = toggle(player)
     end
-    player.render
-    winner = color[toggle(player)]
-    puts "#{winner} wins"
+    player.render(true)
+    toggle(player).checkmate
   end
 
   def toggle(player)
@@ -35,6 +31,11 @@ class Game
 end
 
 if $PROGRAM_NAME == __FILE__
-  game = Game.new(HumanPlayer.new("A"), HumanPlayer.new("B"))
+  board = Board.new
+  game = Game.new(
+    ComputerPlayer.new("not AI", board, :red),
+    HumanPlayer.new("Human", board, :blue),
+    board
+  )
   game.run
 end
