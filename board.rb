@@ -4,9 +4,9 @@ class InvalidMoveError < StandardError
 end
 
 class Board
-  def initialize
+  def initialize(empty = false)
     @grid = Array.new(8) {Array.new(8)}
-    setup_board
+    setup_board unless empty
   end
 
   def in_check?(color)
@@ -64,7 +64,7 @@ class Board
   end
 
   def dup
-    dup_board = self.class.new
+    dup_board = self.class.new(true)
 
     pieces.each do |piece|
       dup_board[piece.pos] = (piece.dup(dup_board))

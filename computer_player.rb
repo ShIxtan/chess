@@ -13,7 +13,7 @@ class  ComputerPlayer < Player
     @board.moves(@color).each do |move|
       test_board = @board.simulate(move)
       # return move if test_board.checkmate?(enemy_color)
-      test_score = -1 * negamax(test_board, toggle_color(@color), -250, 250, 3)
+      test_score = -1 * negamax(test_board, toggle_color(@color), -250, 250, 2)
 
       if best_score.nil? || test_score > best_score
         best_move, best_score = move, test_score
@@ -48,8 +48,5 @@ class  ComputerPlayer < Player
     colors[@color] - colors[enemy_color]
   end
 
-  # def best_enemy_move(test_board)
-  #   ComputerPlayer.new("bot#{rand(100)}", test_board, enemy_color).turn(true)
-  # end
 
 end
