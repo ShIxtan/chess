@@ -9,27 +9,6 @@ class Board
     setup_board
   end
 
-  def setup_board
-    order = {red: [0, 1], blue: [7, 6]}.each do |color, row|
-      setup_row(row[0], color)
-      setup_pawns(row[1], color)
-    end
-  end
-
-  def setup_row(row, color)
-    order = [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]
-
-    order.each_with_index do |piece, i|
-      self[[row, i]] = piece.new([row, i], color, self)
-    end
-  end
-
-  def setup_pawns(row, color)
-    8.times do |i|
-      self[[row, i]] = Pawn.new([row, i], color, self)
-    end
-  end
-
   def in_check?(color)
     king = find { |tile| tile.class == King && tile.color == color }.first
     opposite = (color == :red ? :blue : :red)
@@ -86,10 +65,9 @@ class Board
 
   def dup
     dup_board = self.class.new
-    @grid.each_with_index do |row, x|
-      row.each_index do |y|
-        dup_board[[x, y]] = (self[[x, y]].nil? ? nil : self[[x, y]].dup(dup_board))
-      end
+
+    pieces.each do |piece|
+      dup_board[piece.pos] = (piece.dup(dup_board))
     end
 
     dup_board
@@ -125,8 +103,29 @@ class Board
   protected
 
   def perform_move(from, to)
-    self[[to[0], to[1]]], self[[from[0], from[1]]] = self[from], nil
+    self[to], self[from] = self[from], nil
     self[to].move(to)
     self
+  end
+
+  def setup_board
+    order = {red: [0, 1], blue: [7, 6]}.each do |color, row|
+      setup_row(row[0], color)
+      setup_pawns(row[1], color)
+    end
+  end
+
+  def setup_row(row, color)
+    order = [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]
+
+    order.each_with_index do |piece, i|
+      self[[row, i]] = piece.new([row, i], color, self)
+    end
+  end
+
+  def setup_pawns(row, color)
+    8.times do |i|
+      self[[row, i]] = Pawn.new([row, i], color, self)
+    end
   end
 end
