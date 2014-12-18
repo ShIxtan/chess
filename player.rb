@@ -47,7 +47,7 @@ class Player
     print "#{@name.colorize(color)}, what's your move? " unless game_ended
   end
 
-  def pieces
+  def pieces #pieces array might be faster
     @board.find{ |piece| piece.color == @color}
   end
 
@@ -69,7 +69,11 @@ class Player
   end
 
   def enemy_color
-    @color == :blue ? :red : :blue
+    toggle_color(@color)
+  end
+
+  def toggle_color(color)
+    color == :blue ? :red : :blue
   end
 
   def parse(index)

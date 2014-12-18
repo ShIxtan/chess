@@ -95,6 +95,23 @@ class Board
     dup_board
   end
 
+  def pieces_by_color(color) #pieces array might be faster
+    find{ |piece| piece.color == color}
+  end
+
+  def moves(color)
+    # this method is contrived
+    arr = []
+
+    pieces_by_color(color).each do |piece|
+      piece.valid_moves.each do |move|
+        arr << [piece.pos, move]
+      end
+    end
+
+    arr
+  end
+
   def [](pos)
     x, y = pos
     @grid[x][y]

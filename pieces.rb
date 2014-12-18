@@ -86,7 +86,7 @@ class Pawn < Piece
 
     [1, -1].each do |diag|
       test_pos = apply_offset(@pos, [direction, diag])
-      moves << test_pos if is_enemy?(test_pos)
+      moves << test_pos if is_enemy?(test_pos) && !off_board?(test_pos)
     end
 
     moves
