@@ -13,7 +13,7 @@ class  ComputerPlayer < Player
     @board.moves(@color).each do |move|
       test_board = @board.simulate(move)
       # return move if test_board.checkmate?(enemy_color)
-      test_score = -1 * negamax(test_board, toggle_color(@color), 1)
+      test_score = -1 * negamax(test_board, toggle_color(@color), -250, 250, 3)
 
       if best_score.nil? || test_score > best_score
         best_move, best_score = move, test_score
@@ -23,15 +23,17 @@ class  ComputerPlayer < Player
     best_move
   end
 
-  def negamax(test_board, color, depth)
+  def negamax(test_board, color, alpha, beta, depth)
     return score(test_board) * (color == @color ? 1 : -1) if depth == 0
-    max = -250
+    best_value = -250
     best_move = nil
     test_board.moves(color).each do |move|
-      test_score = -1 * negamax(test_board.simulate(move), toggle_color(color), depth - 1)
-      max = test_score if test_score > max
+      test_score = -1 * negamax(test_board.simulate(move), toggle_color(color), -beta, -alpha, depth - 1)
+      best_value = test_score if test_score > best_value
+      alpha = test_score if test_score > alpha
+      break if alpha >= beta
     end
-    max
+    best_value
   end
 
 
